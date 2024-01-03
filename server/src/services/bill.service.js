@@ -13,7 +13,17 @@ async function createBillMySql(userId, address, phone, total) {
 async function getBillsMySql(userId) {
 
     try {
-        const [result] = await db.execute("select * from bills join bill_detail on bills.billId = bill_detail.bill_id join products on bill_detail.productId = products.productId where userId = ?", [userId]);
+        const [result] = await db.execute("select * from bills  where userId = ?", [userId]);
+        return result
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function getBillByAdminSql() {
+
+    try {
+        const [result] = await db.execute("select * from bills join users on bills.userId = users.userId");
         return result
     } catch (error) {
         console.log(error)
@@ -22,5 +32,6 @@ async function getBillsMySql(userId) {
 
 module.exports = {
     createBillMySql,
-    getBillsMySql
+    getBillsMySql,
+    getBillByAdminSql
 }

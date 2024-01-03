@@ -77,9 +77,9 @@ export default function Cart() {
       console.log(error);
     }
   }
+  
   const handlePayment = async () => {
     try {
-
       const bill = {
         userId: userLogin.userId,
         address,

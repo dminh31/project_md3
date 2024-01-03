@@ -1,4 +1,13 @@
-const { createBillDetailMySql } = require("../services/bill_detail.service");
+const { createBillDetailMySql, getProductInBillMySql } = require("../services/bill_detail.service");
+async function getProductInBill(req, res) {
+    const { billId } = req.params
+    try {
+        const products = await getProductInBillMySql(billId)
+        res.status(200).json(products)
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 async function createBillDetail(req, res) {
     try {
@@ -15,5 +24,6 @@ async function createBillDetail(req, res) {
 }
 
 module.exports = {
+    getProductInBill,
     createBillDetail
 }

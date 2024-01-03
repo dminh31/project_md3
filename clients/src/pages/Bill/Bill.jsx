@@ -22,9 +22,15 @@ export default function Bill() {
   const [show, setShow] = useState(false);
   const [infoDetail, setInfoDetails] = useState([]);
   const handleClose = () => setShow(false);
-  const handleShow = (details) => {
+  const handleShow = async (details) => {
+    console.log(details);
     setShow(true);
-    setInfoDetails(details);
+    try {
+      const response = await publicAxios.get(`/api/v1/billDetail/${details.billId}`)
+      setInfoDetails(response.data)
+    } catch (error) {
+      console.log(error)
+    }
   };
   const [flag, setFlag] = useState(true)
   const handleChangeStatus = async (id, status) => {
@@ -40,10 +46,10 @@ export default function Bill() {
   }, [flag])
   return (
     <div>
-      <div className="text-center mt-[100px]" >
+      <div className="text-center mt-[80px]" >
         <h3 className="text-4xl font-extrabold">Đơn hàng của bạn</h3>
         <div className="bg-black w-24 h-1 m-auto mt-3"></div>
-        <table cellPadding={50} cellSpacing={30} className='text-xl mt-2 m-auto'>
+        <table cellPadding={40} cellSpacing={30} className='text-xl mt-2 m-auto w-[80%] '>
           <thead>
             <tr>
               <th>STT</th>
@@ -62,7 +68,7 @@ export default function Bill() {
                 <td>
                   <Button
                     variant="primary"
-                    onClick={() => handleShow(item.orderDetails)}
+                    onClick={() => handleShow(item)}
                     className="bg-slate-500 text-[15px]"
                   >
                     Xem Chi Tiết
@@ -70,7 +76,7 @@ export default function Bill() {
                 </td>
                 <td>{VND.format(item.total)}</td>
                 <td>
-                  {item.status === "Đang chờ" ? (
+                  {item.status === "Đang xử lý" ? (
                     <span style={{ color: "green" }}>Đang Chờ</span>
                   ) : item.status === "Xác nhận" ? (
                     <span style={{ color: "blue" }}>Xác nhận</span>
@@ -97,10 +103,11 @@ export default function Bill() {
             {infoDetail.map((item) => (
               <div className="titles_produsctsx text-center">
                 <hr />
-                <p>Tên:{item.nameProduct}</p>
-                <p>Thời gian nhận hàng:{item.createdAt}</p>
-                <p>Số Lượng:{item.quantity}</p>
-                <p>Giá Sản Phẩm:{VND.format(item.price)}</p>
+                <p>Tên: {item.nameProduct}</p>
+                <p>Thời gian mua hàng: {item.createdAt}</p>
+                {/* <img src={item.image} alt="" /> */}
+                <p>Số Lượng: {item.quantity}</p>
+                <p>Giá Sản Phẩm: {VND.format(item.price)}</p>
               </div>
             ))}
           </Modal.Body>

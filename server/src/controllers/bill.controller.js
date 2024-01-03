@@ -1,4 +1,4 @@
-const { createBillMySql, getBillsMySql } = require("../services/bill.service");
+const { createBillMySql, getBillsMySql, getBillByAdminSql } = require("../services/bill.service");
 
 async function createBill(req, res) {
 
@@ -26,7 +26,22 @@ async function getBills(req, res) {
     }
 }
 
+async function getBillByAdmin(req,res) {
+
+    try {
+        const bills = await getBillByAdminSql()
+        console.log(bills)
+        res.status(200).json({
+            bills
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
     createBill,
-    getBills
+    getBills,
+    getBillByAdmin
+
 }

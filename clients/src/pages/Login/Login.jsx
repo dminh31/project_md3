@@ -22,9 +22,16 @@ export default function Login() {
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("currentUser", JSON.stringify(response.data.currentUser));
             successNoti(response.data.message);
-            setTimeout(() => {
-                navigate("/")
-            }, 1000);
+            
+            console.log(response.data.currentUser.role)
+            if (response.data.currentUser.role === 1) {
+                navigate("/admin")
+            } else {
+                setTimeout(() => {
+                    navigate("/")
+                }, 1000);
+                
+            }
         } catch (error) {
             failedNoti(error.response.data.message);
         }
