@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import publicAxios from '../../config/publicAxios'
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import privateAxios from '../../config/privateAxios';
 export default function AdminBill() {
     const [bills, setBills] = useState([])
     const VND = new Intl.NumberFormat("vi-VN", {
@@ -12,7 +13,7 @@ export default function AdminBill() {
     const handleGetBills = async () => {
         try {
             const res = await publicAxios.get("/api/v1/bills")
-            console.log(res.data)
+            console.log(res.data.bills)
             setBills(res.data.bills)
         } catch (error) {
             console.log(error)
@@ -26,12 +27,29 @@ export default function AdminBill() {
         console.log(details);
         setShow(true);
         try {
-            const response = await publicAxios.get(`/api/v1/billDetail/${details.billId}`)
+            const response = await privateAxios.get(`/api/v1/billDetail/${details.billId}`)
             setInfoDetails(response.data)
         } catch (error) {
             console.log(error)
         }
     };
+    // const [flag, setFlag] = useState(true)
+    const handleChangeStatus = async (id, status) => {
+        let accept = window.confirm("Bạn muốn thực hiện hành đông không");
+        if (accept) {
+            await privateAxios.put(`/api/v1/update/${id}`, {
+                status: status,
+            });
+        }
+        await handleGetBills();
+        // setFlag(!flag);
+    }
+
+    const handleLogOut = () => {
+        localStorage.removeItem("currentUser")
+        localStorage.removeItem("token")
+        window.location.href = "/login "
+    }
 
     useEffect(() => {
         handleGetBills()
@@ -45,27 +63,25 @@ export default function AdminBill() {
                 </a>
                 <div className="toolbar">
                     <button className="btn btn--primary">Add New Plumbus</button>
-                    <a href="#" className="logout">
-                        Log Out
-                    </a>
+                   <button onClick={handleLogOut}>Log Out</button>
                 </div>
             </header>
             <nav className="admin__nav">
                 <ul className="menu">
                     <li className="menu__item">
-                        <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600 '>Quan li san pham</span></Link>
+                        <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600 '>Quản lí sản phẩm</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600 ' >Quan li don hang</span></Link>
+                        <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600 ' >Quản lí đơn hàng</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quan li nguoi dung</span></Link>
+                        <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quản lí người dùng</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Quan li loai san pham</span></Link>
+                        <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Phân loại sản phẩm</span></Link>
                     </li>
 
                 </ul>
@@ -80,6 +96,9 @@ export default function AdminBill() {
                                 <tr>
                                     <th scope="col">Stt</th>
                                     <th scope="col">Tên </th>
+                                    <th scope="col">Thong tin don hang </th>
+                                    <th scope="col">Tong tien </th>
+                                    <th scope="col">Trang thai </th>
                                     <th scope="col">Chức năng</th>
                                 </tr>
                             </thead>
@@ -106,13 +125,11 @@ export default function AdminBill() {
                                             ) : (
                                                 <span style={{ color: "red" }}>Từ chối</span>
                                             )}
+                                            {/* {item.status} */}
                                         </td>
                                         <td>
-                                            {item.status === "Đang xử lý" ? (
-                                                <button onClick={() => handleChangeStatus(item.id, "Hủy")}>Hủy đơn</button>
-                                            ) : (
-                                                ""
-                                            )}
+                                            <button onClick={() => handleChangeStatus(item.billId, "Đã hủy")}>Hủy đơn</button>
+                                            <button onClick={() => handleChangeStatus(item.billId, "Xác nhận")}>Đồng ý</button>
                                         </td>
                                     </tr>
                                 })}

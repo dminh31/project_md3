@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import publicAxios from '../../config/publicAxios'
+import privateAxios from '../../config/privateAxios'
 import { failedNoti, successNoti } from "../../util/"
 import Modal from "react-bootstrap/Modal";
 import Button from 'react-bootstrap/Button';
@@ -19,7 +20,10 @@ export default function AdminProduct() {
     const handleShow = () => {
         setShow(true)
     }
-
+    const VND = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    });
     const [newProduct, setNewProduct] = useState({
         nameProduct: "",
         price: 0,
@@ -34,7 +38,7 @@ export default function AdminProduct() {
             const response = await publicAxios.get("/api/v1/products");
             setProduct(response.data);
         } catch (error) {
-            console.log(error);
+            failedNoti(error.response.data.message);
         }
     }
 
@@ -43,7 +47,7 @@ export default function AdminProduct() {
             const response = await publicAxios.get("/api/v1/categories");
             setCategories(response.data);
         } catch (error) {
-            console.log(error);
+            failedNoti(error.response.data.message);
         }
     }
 
@@ -79,7 +83,7 @@ export default function AdminProduct() {
                 ),
             ]);
             const media = uploadMedia.data.secure_url;
-            const response = await publicAxios.post("/api/v1/products", {
+            const response = await privateAxios.post("/api/v1/products", {
                 ...newProduct,
                 image: media,
             });
@@ -109,7 +113,7 @@ export default function AdminProduct() {
     const handleSave = async () => {
         try {
             if (!selectedMedia) {
-                const response = await publicAxios.put(
+                const response = await privateAxios.put(
                     `/api/v1/product/${newProduct.productId}`,
                     newProduct
                 );
@@ -126,13 +130,12 @@ export default function AdminProduct() {
                 ),
             ]);
             const media = uploadMedia.data.secure_url;
-            const response = await publicAxios.put(
+            const response = await privateAxios.put(
                 `/api/v1/product/${newProduct.productId}`,
                 { ...newProduct, image: media }
             );
             console.log(response);
             setProduct(response.data.products);
-            setShow()
             setNewProduct({
                 nameProduct: "",
                 price: 0,
@@ -142,18 +145,19 @@ export default function AdminProduct() {
                 description: ""
             })
             setPreview(null)
+            setShow(false)
         } catch (error) {
-            console.log(error)
+            failedNoti(error.response.data.message);
         }
     }
 
     const handleDelete = async (id) => {
         try {
-            const res = await publicAxios.delete(`/api/v1/product/${id}`)
+            const res = await privateAxios.delete(`/api/v1/product/${id}`)
             successNoti(res.data.message)
             setProduct(res.data.products)
         } catch (error) {
-            console.log(error)
+            failedNoti(error.response.data.message)
         }
     }
 
@@ -164,7 +168,7 @@ export default function AdminProduct() {
             );
             setProduct(response.data);
         } catch (error) {
-            console.log(error)
+            failedNoti(error.response.data.message);
         }
     };
 
@@ -177,6 +181,11 @@ export default function AdminProduct() {
         setCurrentPage(page);
     };
 
+    const handleLogOut = () => {
+        localStorage.removeItem("currentUser")
+        localStorage.removeItem("token")
+        window.location.href = "/login "
+    }
     return (
         <div className="admin">
             <header className="admin__header">
@@ -185,27 +194,25 @@ export default function AdminProduct() {
                 </a>
                 <div className="toolbar">
                     <button className="btn btn--primary">Add New Plumbus</button>
-                    <a href="#" className="logout">
-                        Log Out
-                    </a>
+                    <button onClick={handleLogOut}>Log Out</button>
                 </div>
             </header>
             <nav className="admin__nav">
                 <ul className="menu">
                     <li className="menu__item">
-                        <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600'>Quan li san pham</span></Link>
+                        <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600 '>Quản lí sản phẩm</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600'>Quan li don hang</span></Link>
+                        <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600 ' >Quản lí đơn hàng</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quan li nguoi dung</span></Link>
+                        <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quản lí người dùng</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Quan li loai san pham</span></Link>
+                        <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Phân loại sản phẩm</span></Link>
                     </li>
 
                 </ul>
@@ -318,7 +325,7 @@ export default function AdminProduct() {
                                 id="description"
                                 type="text"
                                 name='description'
-                                placeholder="Nhập số điện thoại"
+                                placeholder="Nhập mô tả sản phẩm"
                                 value={newProduct.description} onChange={handleGetValue}
                             /> <br />
 
@@ -342,7 +349,7 @@ export default function AdminProduct() {
                         <table className="table table-hover table-nowrap">
                             <thead className="thead-light ">
                                 <tr>
-                                    <th scope="col">Stt</th>
+                                    <th scope="col">STT</th>
                                     <th scope="col">Ảnh</th>
                                     <th scope="col">Tên</th>
                                     {/* <th scope="col">Loại</th> */}
@@ -366,7 +373,7 @@ export default function AdminProduct() {
                                             </td>
                                             <td>{item.nameProduct}</td>
                                             {/* <td>{item.cateId}</td> */}
-                                            <td>{item.price}</td>
+                                            <td>{VND.format(item.price)}</td>
                                             <td>{item.stock}</td>
                                             <td>
                                                 <button
@@ -394,7 +401,7 @@ export default function AdminProduct() {
                     </div>
                     <div id="changePage"></div>
                 </div>
-                <Pagination 
+                <Pagination
                     current={currentPage}
                     onChange={onPageChange}
                     pageSize={itemsPerPage}

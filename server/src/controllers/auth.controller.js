@@ -30,7 +30,7 @@ async function login(req, res) {
         if (!findUser) {
             return res.status(400).json({ message: "Email khong ton tai" });
         }
-        if (findUser.status == 1) {
+        if (findUser.status_user == 1) {
             return res.status(400).json({ message: "Tai khoan bi khoa" });
         }
         // console.log(findUser)

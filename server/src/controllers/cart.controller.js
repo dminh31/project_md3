@@ -1,4 +1,4 @@
-const { addNewProductToCart, checkProductInCart, updatePlusQuantity, getCartByUserId, deleteCartSQL, increSQL, deleteCartByUserId } = require("../services/cart.service");
+const { addNewProductToCart, checkProductInCart, updatePlusQuantity, getCartByUserId, deleteCartSQL, increSQL, deleteCartByUserId, getCartQuantityId } = require("../services/cart.service");
 async function getCart(req, res) {
     const { user_id } = req.params
     try {
@@ -47,10 +47,20 @@ async function changeQuantity(req, res) {
     // console.log("33333", req.body)
     const { cartId, type } = req.body;
     try {
+        const cart = await getCartQuantityId(cartId)
+        if (cart.quantity <= 1) {
+            await deleteCartSQL(cartId)
+            return res.status(200).json({
+                message: "Xoa san pham thanh cong",
+            });
+        }
+
         const result = await increSQL(cartId, type);
         res.status(200).json({
             message: "tăng số lượng thành công",
         });
+
+
     } catch (error) {
         console.log(error);
 

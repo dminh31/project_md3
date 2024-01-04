@@ -26,7 +26,7 @@ export default function AdminCate() {
             nameCate: newCate
         }
         try {
-            const response = await publicAxios.post("/api/v1/categories", newCateGory.nameCate)
+            const response = await privateAxios.post("/api/v1/categories", newCateGory.nameCate)
             setCategories(response.data.cates)
             alert(response.data.message)
             setNewCate({
@@ -44,7 +44,7 @@ export default function AdminCate() {
     const handleSave = async () => {
         console.log("aaa", newCate);
         try {
-            const res = await publicAxios.put(`/api/v1/categories/${newCate.cateId}`, newCate)
+            const res = await privateAxios.put(`/api/v1/categories/${newCate.cateId}`, newCate)
             setCategories(res.data.cates)
             setNewCate({
                 nameCate: ""
@@ -64,6 +64,12 @@ export default function AdminCate() {
         }
     }
 
+    const handleLogOut = () => {
+        localStorage.removeItem("currentUser")
+        localStorage.removeItem("token")
+        window.location.href = "/login "
+    }
+
     return (
         <div className="admin">
             <header className="admin__header">
@@ -72,27 +78,25 @@ export default function AdminCate() {
                 </a>
                 <div className="toolbar">
                     <button className="btn btn--primary">Add New Plumbus</button>
-                    <a href="#" className="logout">
-                        Log Out
-                    </a>
+                    <button onClick={handleLogOut}>Log Out</button>
                 </div>
             </header>
             <nav className="admin__nav">
                 <ul className="menu">
                     <li className="menu__item">
-                        <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600'>Quan li san pham</span></Link>
+                        <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600 '>Quản lí sản phẩm</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600'>Quan li don hang</span></Link>
+                        <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600 ' >Quản lí đơn hàng</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quan li nguoi dung</span></Link>
+                        <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quản lí người dùng</span></Link>
                     </li>
 
                     <li className="menu__item">
-                        <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Quan li loai san pham</span></Link>
+                        <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Phân loại sản phẩm</span></Link>
                     </li>
 
                 </ul>

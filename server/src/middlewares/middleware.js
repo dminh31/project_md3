@@ -34,6 +34,7 @@ const verifyToken = (req, res, next) => {
         if (!token) {
             return res.status(401).json({ message: "Không tìm thấy token" });
         }
+
         jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
             if (err) {
                 if (err.name === "TokenExpiredError") {

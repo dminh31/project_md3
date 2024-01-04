@@ -44,6 +44,15 @@ async function deleteCartSQL(id) {
     }
 }
 
+async function getCartQuantityId(id) {
+    try {
+        const [result] = await db.execute("select * from cart where cartId = ?", [id])
+        return result[0]
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 async function increSQL(id, type) {
     try {
         if (type == "incre") {
@@ -83,5 +92,6 @@ module.exports = {
     updatePlusQuantity,
     deleteCartSQL,
     increSQL,
-    deleteCartByUserId
+    deleteCartByUserId,
+    getCartQuantityId
 }

@@ -32,13 +32,17 @@ export default function Bill() {
       console.log(error)
     }
   };
+  console.log(infoDetail);
   const [flag, setFlag] = useState(true)
   const handleChangeStatus = async (id, status) => {
-    let confirm = window.confirm("Bạn muốn hủy đơn?")
-    if (confirm) {
-      await axios.patch(`http://localhost:5000/bills/${id}`, { status: status })
-      setFlag(!flag)
+    let accept = window.confirm("Bạn muốn thực hiện hành đông không");
+    if (accept) {
+      await publicAxios.put(`/api/v1/update/${id}`, {
+        status: status,
+      });
     }
+    handleGetBill();
+    setFlag(!flag);
   }
 
   useEffect(() => {
@@ -65,6 +69,7 @@ export default function Bill() {
               return <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{item.address}</td>
+                
                 <td>
                   <Button
                     variant="primary"
@@ -85,8 +90,8 @@ export default function Bill() {
                   )}
                 </td>
                 <td>
-                  {item.status === "Đang chờ" ? (
-                    <button onClick={() => handleChangeStatus(item.id, "Hủy")}>Hủy đơn</button>
+                  {item.status === "Đang xử lý" ? (
+                    <button onClick={() => handleChangeStatus(item.billId, "Đã hủy")}>Hủy đơn</button>
                   ) : (
                     ""
                   )}

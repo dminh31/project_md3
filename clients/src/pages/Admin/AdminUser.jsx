@@ -19,12 +19,19 @@ export default function AdminUser() {
   }, [])
   const handleChangeStatus = async (user_id) => {
     try {
-      const response = await publicAxios.patch(`/api/user/${user_id}`);
+      const response = await privateAxios.patch(`/api/user/${user_id}`);
       setUsers(response.data.users)
     } catch (error) {
       console.log(error)
     }
   }
+
+  const handleLogOut = () => {
+    localStorage.removeItem("currentUser")
+    localStorage.removeItem("token")
+    window.location.href = "/login "
+  }
+
   return (
     <div className="admin">
       <header className="admin__header">
@@ -33,27 +40,25 @@ export default function AdminUser() {
         </a>
         <div className="toolbar">
           <button className="btn btn--primary">Add New Plumbus</button>
-          <a href="#" className="logout">
-            Log Out
-          </a>
+         <button onClick={handleLogOut}>Log Out</button>
         </div>
       </header>
       <nav className="admin__nav">
         <ul className="menu">
           <li className="menu__item">
-            <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600'>Quan li san pham</span></Link>
+            <Link to={"/adminProduct"}><span className='text-2xl hover:text-pink-600 '>Quản lí sản phẩm</span></Link>
           </li>
 
           <li className="menu__item">
-            <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600'>Quan li don hang</span></Link>
-          </li>
-    
-          <li className="menu__item">
-            <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quan li nguoi dung</span></Link>
+            <Link to={"/adminBill"}><span className='text-2xl hover:text-pink-600 ' >Quản lí đơn hàng</span></Link>
           </li>
 
           <li className="menu__item">
-            <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Quan li loai san pham</span></Link>
+            <Link to={"/adminUser"}><span className='text-2xl hover:text-pink-600'>Quản lí người dùng</span></Link>
+          </li>
+
+          <li className="menu__item">
+            <Link to={"/adminCate"}><span className='text-2xl hover:text-pink-600'>Phân loại sản phẩm</span></Link>
           </li>
 
         </ul>

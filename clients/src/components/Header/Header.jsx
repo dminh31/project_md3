@@ -28,7 +28,7 @@ export default function Header() {
   const handleLogOut = () => {
     localStorage.removeItem("currentUser")
     localStorage.removeItem("idProduct")
-    window.location.href = "/ "
+    window.location.href = "/login "
   }
 
   const changePage = () => {

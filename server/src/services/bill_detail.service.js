@@ -11,6 +11,7 @@ async function getProductInBillMySql(billId) {
     }
 }
 async function createBillDetailMySql(billId, productId, quantity) {
+    
     try {
         const [result] = await db.execute(
             "insert into bill_detail (bill_id, quantity, productId) values (?,?,?)",

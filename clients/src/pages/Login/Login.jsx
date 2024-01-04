@@ -19,13 +19,13 @@ export default function Login() {
                 "http://localhost:8080/api/auth/login",
                 input
             );
+            console.log(response.data.token)
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("currentUser", JSON.stringify(response.data.currentUser));
             successNoti(response.data.message);
             
-            console.log(response.data.currentUser.role)
-            if (response.data.currentUser.role === 1) {
-                navigate("/admin")
+            if (response.data.currentUser.role == 1) {
+                navigate("/adminProduct")
             } else {
                 setTimeout(() => {
                     navigate("/")

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import publicAxios from '../../config/publicAxios';
 import Modal from "react-bootstrap/Modal";
 import Button from 'react-bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
 export default function Cart() {
   const [cart, setCart] = useState([])
   const [flag, setFlag] = useState(false)
@@ -71,14 +72,19 @@ export default function Cart() {
   const handleIncrease = async (id) => {
     const body = { cartId: id, type: "incre" }
     try {
-      await publicAxios.patch(`/api/v1/cart`, body);
+      const res = await publicAxios.patch(`/api/v1/cart`, body);
       setFlag(!flag);
     } catch (error) {
       console.log(error);
     }
   }
-  
+
+  const navigate = useNavigate()
+
   const handlePayment = async () => {
+    if (!address || !phone) {
+
+    }
     try {
       const bill = {
         userId: userLogin.userId,
@@ -96,6 +102,7 @@ export default function Cart() {
       alert("Thanh toan thanh cong")
       setCart([])
       handleClose()
+      navigate("/bill")
     } catch (error) {
       console.log(error)
     }
